@@ -5,12 +5,17 @@ import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import { Camera } from "lucide-react";
 
 export default function Profile() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [form, setForm] = useState({
+    name: "Nome do Usuário",
     email: "usuario@exemplo.com",
     currentPassword: "",
     newPassword: "",
@@ -72,6 +77,17 @@ export default function Profile() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome</Label>
+              <Input
+                id="name"
+                name="name"
+                type="name"
+                value={form.name}
+                onChange={handleFormChange}
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
