@@ -31,6 +31,36 @@ export default function Home() {
             Cadastrar
           </Button>
         </div>
+
+        <div className="grid md:grid-cols-3 gap-6 mt-12">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-2">
+              Envie Imagens ou Vídeos
+            </h3>
+            <p className="text-gray-600">
+              Faça upload de evidências de infrações para análise rápida e
+              precisa.
+            </p>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-2">Validação Automática</h3>
+            <p className="text-gray-600">
+              Nosso sistema identifica automaticamente placas, locais e tipos de
+              infrações.
+            </p>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-2">
+              Histórico de Veículos
+            </h3>
+            <p className="text-gray-600">
+              Acesse facilmente todos os veículos e infrações que você já
+              reportou.
+            </p>
+          </Card>
+        </div>
       </div>
     </div>
   );
