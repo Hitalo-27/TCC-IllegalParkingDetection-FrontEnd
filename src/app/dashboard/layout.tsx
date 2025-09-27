@@ -9,12 +9,17 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { Button } from "@/src/components/ui/button";
+import { useAuth } from "@/src/hooks/useAuth";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const loading = useAuth();
+
+  if (loading) return <p className="text-center mt-10"></p>;
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
@@ -68,6 +73,9 @@ export default function DashboardLayout({
                   <Link
                     href="/"
                     className="cursor-pointer flex items-center gap-2"
+                    onClick={() => {
+                      localStorage.removeItem("token"); // limpa o token
+                    }}
                   >
                     <LogOut className="w-4 h-4" />
                     Sair
