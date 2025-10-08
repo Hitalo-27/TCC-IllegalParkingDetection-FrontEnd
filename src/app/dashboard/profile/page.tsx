@@ -7,84 +7,47 @@ import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/src/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { Camera, X } from "lucide-react";
 import { API_BASE_URL } from "@/src/config/env";
+import { useUser } from "@/src/contexts/UserContext";
 
 export default function Profile() {
   const router = useRouter();
+  const { image, setImage, name, setName, email, setEmail } = useUser();
+
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(image);
   const [form, setForm] = useState({
-    name: "",
-    email: "",
+    name,
+    email,
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success" | "error">(
-    "error"
-  );
+  const [toastVariant, setToastVariant] = useState<"success" | "error">("error");
 
-  // Buscar dados do usuário ao montar o componente
+  // Sincroniza formulário e preview com o contexto
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(`${API_BASE_URL}/users/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        console.log("Response status:", token);
-
-        if (!response.ok) throw new Error("Erro ao buscar dados do usuário");
-
-        const data = await response.json();
-        setForm((prev) => ({
-          ...prev,
-          name: data.username,
-          email: data.email,
-        }));
-
-        const imageUrl = data.image_url
-          ? `${API_BASE_URL}${data.image_url}` // concatena o domínio
-          : null;
-
-        setPreviewImage(imageUrl);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchUser();
-  }, []);
+    setPreviewImage(image);
+    setForm(prev => ({ ...prev, name, email }));
+  }, [image, name, email]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setProfileImage(file);
-
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
+      reader.onloadend = () => setPreviewImage(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,8 +62,6 @@ export default function Profile() {
 
     try {
       const token = localStorage.getItem("token");
-
-      // Criar um FormData para suportar arquivos
       const formData = new FormData();
       formData.append("username", form.name);
       formData.append("email", form.email);
@@ -111,15 +72,11 @@ export default function Profile() {
         formData.append("new_password_confirm", form.confirmPassword);
       }
 
-      if (profileImage) {
-        formData.append("image", profileImage); 
-      }
+      if (profileImage) formData.append("image", profileImage);
 
       const response = await fetch(`${API_BASE_URL}/users/update`, {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -130,6 +87,18 @@ export default function Profile() {
         setToastOpen(true);
         return;
       }
+
+      const data = await response.json();
+
+      if (data.image_url) {
+        const uploadedImageUrl = API_BASE_URL + data.image_url;
+        setPreviewImage(uploadedImageUrl);
+        setImage(uploadedImageUrl);
+      }
+
+      // Atualiza nome e email no contexto
+      setName(form.name);
+      setEmail(form.email);
 
       setToastVariant("success");
       setToastMessage("Perfil atualizado com sucesso! 😎");
@@ -177,66 +146,34 @@ export default function Profile() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={form.name}
-                  onChange={handleFormChange}
-                />
+                <Input id="name" name="name" type="text" value={form.name} onChange={handleFormChange} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleFormChange}
-                />
+                <Input id="email" name="email" type="email" value={form.email} onChange={handleFormChange} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="currentPassword">Senha Atual</Label>
-                <Input
-                  id="currentPassword"
-                  name="currentPassword"
-                  type="password"
-                  value={form.currentPassword}
-                  onChange={handleFormChange}
-                />
+                <Input id="currentPassword" name="currentPassword" type="password" value={form.currentPassword} onChange={handleFormChange} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="newPassword">Nova Senha</Label>
-                <Input
-                  id="newPassword"
-                  name="newPassword"
-                  type="password"
-                  value={form.newPassword}
-                  onChange={handleFormChange}
-                />
+                <Input id="newPassword" name="newPassword" type="password" value={form.newPassword} onChange={handleFormChange} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={form.confirmPassword}
-                  onChange={handleFormChange}
-                />
+                <Input id="confirmPassword" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleFormChange} />
               </div>
 
-              <Button type="submit" className="w-full">
-                Salvar Alterações
-              </Button>
+              <Button type="submit" className="w-full">Salvar Alterações</Button>
             </form>
           </Card>
         </div>
-        {/* Toast */}
+
         <ToastPrimitives.Root
           open={toastOpen}
           onOpenChange={setToastOpen}
