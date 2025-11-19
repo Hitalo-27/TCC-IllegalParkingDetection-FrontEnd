@@ -9,11 +9,11 @@ import { useState } from "react";
 // Dados simulados de resultado da validação
 const mockValidationResult = {
   hasInfraction: true,
-  plate: "XYZ5678",
-  location: "Rua Oscar Freire, 123",
-  datetime: "2024-03-21 15:45",
-  infraction: "Estacionamento em vaga de idoso sem credencial",
-  type: "Grave",
+  plate: "COM6864",
+  location: "Av. Paulista, São Paulo, SP",
+  datetime: "29/10/2025, 03:57:48",
+  infraction: "Estacionado sob placa de proibido",
+  type: "Média",
 };
 
 export default function Validate() {
@@ -52,7 +52,7 @@ export default function Validate() {
         <Card className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="file">Enviar Imagem ou Vídeo</Label>
+              <Label htmlFor="file">Enviar Imagem</Label>
               <Input
                 id="file"
                 type="file"
@@ -61,7 +61,7 @@ export default function Validate() {
                 className="mt-1"
               />
               <p className="text-sm text-gray-500 mt-1">
-                Formatos aceitos: JPG, PNG, MP4, MOV
+                Formatos aceitos: JPG, PNG
               </p>
             </div>
 

@@ -4,6 +4,7 @@ import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
+import { Mapa } from "@/src/components/ui/mapa";
 import { useState } from "react";
 import { API_BASE_URL } from "@/src/config/env";
 
@@ -13,6 +14,7 @@ export default function Search() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedInfraction, setSelectedInfraction] = useState<any | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +70,7 @@ export default function Search() {
 
   const closeModal = () => {
     setSelectedImage(null);
+    setSelectedInfraction(null);
   };
 
   const handleModalClick = (e: React.MouseEvent) => {
@@ -107,7 +110,6 @@ export default function Search() {
         {/* Exibir resultado */}
         {searchResult && (
           <div className="space-y-6">
-            {/* Cabeçalho */}
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">
                 Resultado para a placa:{" "}
@@ -120,7 +122,6 @@ export default function Search() {
               </p>
             </Card>
 
-            {/* Lista de infrações */}
             {searchResult.infracoes?.length > 0 && (
               <Card className="p-6 space-y-6">
                 {searchResult.infracoes.map((inf: any, index: number) => (
@@ -131,14 +132,14 @@ export default function Search() {
                     <div className="flex flex-col justify-center">
                       <p>
                         <strong>Local:</strong>{" "}
-                        {`${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
+                        {`Av. Paulista, ${inf.endereco.cidade}, SP - ${inf.endereco.pais}`}
                       </p>
                       <p className="font-medium">
                         <strong>Data/Hora:</strong>{" "}
                         {new Date(inf.data).toLocaleString("pt-BR")}
                       </p>
                       <p>
-                        <strong>Motivo:</strong> {inf.tipo_infracao.descricao}{" "}
+                        <strong>Motivo:</strong> {inf.tipo_infracao.descricao}
                       </p>
                       <p>
                         <strong>Tipo de Infração:</strong>{" "}
@@ -156,9 +157,7 @@ export default function Search() {
                           alt={`Infração ${index + 1}`}
                           className="w-full h-24 object-cover rounded-lg cursor-pointer max-w-xs"
                           onClick={() =>
-                            handleImageClick(
-                              `${API_BASE_URL}${inf.imagem}`
-                            )
+                            handleImageClick(`${API_BASE_URL}${inf.imagem}`)
                           }
                         />
                       </div>
@@ -169,25 +168,215 @@ export default function Search() {
             )}
           </div>
         )}
+
+        <Mapa onMarkerClick={(data) => setSelectedInfraction(data)} />
       </div>
 
-      {/* Modal de imagem ampliada */}
-      {selectedImage && (
+      {/* Modal */}
+      {(selectedImage || selectedInfraction) && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 px-4"
           onClick={handleModalClick}
         >
-          <div className="relative">
-            <img
-              src={selectedImage}
-              alt="Imagem Ampliada"
-              className="max-w-[80vw] max-h-[80vh] object-contain"
-            />
+          <div
+            className="
+        relative bg-white rounded-2xl shadow-2xl p-6 
+        max-w-3xl w-full
+        max-h-[90vh]
+        flex flex-col
+        border border-gray-200
+      "
+          >
+            {selectedInfraction ? (
+              <div className="flex flex-col items-center flex-grow">
+
+                {/* IMAGEM COM TAMANHO CONTROLADO (SEM CRIAR SCROLL) */}
+                <img
+                  src={selectedInfraction.imagem}
+                  className="
+              rounded-xl 
+              max-h-[45vh] 
+              w-auto
+              object-contain 
+              border border-gray-200 shadow-sm mb-5
+            "
+                />
+
+                {/* TÍTULO */}
+                <h2 className="text-2xl font-bold text-[hsl(var(--primary))] mb-1">
+                  Detalhes da Infração
+                </h2>
+                <div className="h-[2px] w-24 bg-[hsl(var(--primary))]/30 rounded mb-4"></div>
+
+                {/* DUAS COLUNAS SEM ESTOURAR A TELA */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-gray-800">
+
+                  {/* COLUNA ESQUERDA */}
+                  <div className="space-y-1">
+                    <p>
+                      <span className="font-semibold text-gray-700">Local:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.rua}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Cidade:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.cidade}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Estado:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.estado}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Registrado por:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.user}</span>
+                    </p>
+                  </div>
+
+                  {/* COLUNA DIREITA */}
+                  <div className="space-y-1">
+                    <p>
+                      <span className="font-semibold text-gray-700">Data:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.data}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Infração:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.infracao}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Pontos:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.pontos}</span>
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            ) : (
+              <img
+                src={selectedImage!}
+                alt="Imagem Ampliada"
+                className="rounded-lg max-h-[80vh] max-w-[85vw] object-contain"
+              />
+            )}
+
+            {/* Botão de fechar */}
             <button
               onClick={closeModal}
-              className="absolute -top-4 -right-4 bg-white text-black rounded-full w-8 h-8 flex items-center justify-center shadow-md"
+              className="
+          absolute -top-4 -right-4 bg-white shadow-lg 
+          text-gray-700 font-bold rounded-full 
+          w-10 h-10 flex items-center justify-center 
+          hover:bg-gray-100 transition border
+        "
             >
-              X
+              ✕
+            </button>
+          </div>
+        </div>
+      )}{/* Modal */}
+      {(selectedImage || selectedInfraction) && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 px-4"
+          onClick={handleModalClick}
+        >
+          <div
+            className="
+        relative bg-white rounded-2xl shadow-2xl p-6 
+        max-w-3xl w-full
+        max-h-[90vh]
+        flex flex-col
+        border border-gray-200
+      "
+          >
+            {selectedInfraction ? (
+              <div className="flex flex-col items-center flex-grow">
+
+                {/* IMAGEM COM TAMANHO CONTROLADO (SEM CRIAR SCROLL) */}
+                <img
+                  src={selectedInfraction.imagem}
+                  className="
+              rounded-xl 
+              max-h-[45vh] 
+              w-auto
+              object-contain 
+              border border-gray-200 shadow-sm mb-5
+            "
+                />
+
+                {/* TÍTULO */}
+                <h2 className="text-2xl font-bold text-[hsl(var(--primary))] mb-1">
+                  Detalhes da Infração
+                </h2>
+                <div className="h-[2px] w-24 bg-[hsl(var(--primary))]/30 rounded mb-4"></div>
+
+                {/* DUAS COLUNAS SEM ESTOURAR A TELA */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-gray-800">
+
+                  {/* COLUNA ESQUERDA */}
+                  <div className="space-y-1">
+                    <p>
+                      <span className="font-semibold text-gray-700">Local:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.rua}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Cidade:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.cidade}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Estado:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.estado}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Registrado por:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.user}</span>
+                    </p>
+                  </div>
+
+                  {/* COLUNA DIREITA */}
+                  <div className="space-y-1">
+                    <p>
+                      <span className="font-semibold text-gray-700">Data:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.data}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Infração:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.infracao}</span>
+                    </p>
+
+                    <p>
+                      <span className="font-semibold text-gray-700">Pontos:</span>{" "}
+                      <span className="text-gray-900">{selectedInfraction.pontos}</span>
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            ) : (
+              <img
+                src={selectedImage!}
+                alt="Imagem Ampliada"
+                className="rounded-lg max-h-[80vh] max-w-[85vw] object-contain"
+              />
+            )}
+
+            {/* Botão de fechar */}
+            <button
+              onClick={closeModal}
+              className="
+          absolute -top-4 -right-4 bg-white shadow-lg 
+          text-gray-700 font-bold rounded-full 
+          w-10 h-10 flex items-center justify-center 
+          hover:bg-gray-100 transition border
+        "
+            >
+              ✕
             </button>
           </div>
         </div>
