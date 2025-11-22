@@ -5,21 +5,24 @@ import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { useState } from "react";
+import { API_BASE_URL } from "@/src/config/env";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 // Dados simulados de resultado da validação
-const mockValidationResult = {
-  hasInfraction: true,
-  plate: "XYZ5678",
-  location: "Rua Oscar Freire, 123",
-  datetime: "2024-03-21 15:45",
-  infraction: "Estacionamento em vaga de idoso sem credencial",
-  type: "Grave",
+type mockValidationResult = {
+  hasInfraction: boolean,
+  plate: string,
+  location: string,
+  datetime: string,
+  infraction: string,
+  type: string,
 };
 
 export default function Validate() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [validationResult, setValidationResult] = useState<typeof mockValidationResult | null>(
+  const [loading, setLoading] = useState(false);
+  const [validationResult, setValidationResult] = useState<mockValidationResult | null>(
     null
   );
 
@@ -36,10 +39,39 @@ export default function Validate() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulação de validação
-    setValidationResult(mockValidationResult);
+
+    if (!file) return;
+
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${API_BASE_URL}/plate/identification`, {
+        method: "POST",
+        body: formData,
+      });
+
+      
+      const data = await response.json();
+
+      //Exibir resposta correta caso não tenha nenhuma infração
+
+      if (!response.ok) {
+        throw new Error("Credenciais inválidas");
+      }
+
+      setValidationResult(data);
+      console.log(data)
+    } catch (error) {
+      console.error(error);
+
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,8 +107,15 @@ export default function Validate() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={!file}>
-              Validar
+            <Button type="submit" className="w-full" disabled={!file || loading}>
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <ReloadIcon className="h-4 w-4 animate-spin" />
+                  Enviando...
+                </div>
+              ) : (
+                "Validar"
+              )}
             </Button>
           </form>
         </Card>
@@ -88,9 +127,8 @@ export default function Validate() {
             </h2>
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${
-                  validationResult.hasInfraction ? 'bg-red-500' : 'bg-green-500'
-                }`} />
+                <div className={`w-3 h-3 rounded-full ${validationResult.hasInfraction ? 'bg-red-500' : 'bg-green-500'
+                  }`} />
                 <p className="font-medium">
                   {validationResult.hasInfraction
                     ? 'Infração Detectada'
