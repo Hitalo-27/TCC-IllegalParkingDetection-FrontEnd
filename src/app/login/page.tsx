@@ -83,6 +83,16 @@ export default function Login() {
             <Button type="submit" className="w-full">
               Entrar
             </Button>
+            <p className="text-center mt-4 text-sm text-gray-600">
+              Ainda não tem uma conta?{" "}
+              <Button
+                variant="link"
+                className="p-0"
+                onClick={() => router.push("/register")}
+              >
+                Cadastre-se
+              </Button>
+            </p>
           </form>
         </Card>
 
