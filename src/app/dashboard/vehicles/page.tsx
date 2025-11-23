@@ -1,34 +1,68 @@
 "use client";
 
 import { Card } from "@/src/components/ui/card";
-import { useState } from "react";
+import { API_BASE_URL } from "@/src/config/env";
+import { useEffect, useState } from "react";
+import { useUser } from "@/src/contexts/UserContext";
+import { Mapa } from "@/src/components/ui/mapa";
+import ModalInfraction from "@/src/components/ui/modalinfractions";
 
-// Dados simulados de infração
-const mockInfraction = {
-  infractions: [
-    {
-      plate: "ABC1234",
-      location: "Av. Paulista, 1000",
-      datetime: "2024-03-20 14:30",
-      reason: "Estacionamento em local proibido",
-      type: "Grave",
-      image:
-        "https://wallpapers.com/images/hd/4k-red-car-with-sunlight-at-forest-yv4lcxhpv99ide9a.jpg",
-    },
-    {
-      plate: "ABC1234",
-      location: "Rua Augusta, 500",
-      datetime: "2024-03-19 16:45",
-      reason: "Estacionamento em faixa de pedestres",
-      type: "Grave",
-      image:
-        "https://wallpapers.com/images/featured/imagens-de-carros-em-4k-g6a4f0e15hkua5oa.jpg",
-    },
-  ],
-};
+export default function Vehicles() {
+  const { id } = useUser();
 
-export default function Search() {
+  const [infractions, setInfractions] = useState([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedInfraction, setSelectedInfraction] = useState<any | null>(
+    null
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setError("Token não encontrado. Faça login novamente.");
+          setLoading(false);
+          return;
+        }
+
+        if (!id) {
+          setError("Usuário não identificado.");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(
+          `${API_BASE_URL}/infracoes/consultar?user=${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.detail || "Erro ao consultar infrações.");
+        }
+
+        const data = await response.json();
+
+        setInfractions(data.infracoes || []);
+      } catch (err: any) {
+        setError(err.message || "Erro inesperado.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [id]);
 
   const handleImageClick = (image: string) => {
     setSelectedImage(image);
@@ -36,6 +70,7 @@ export default function Search() {
 
   const closeModal = () => {
     setSelectedImage(null);
+    setSelectedInfraction(null);
   };
 
   const handleModalClick = (e: React.MouseEvent) => {
@@ -44,60 +79,95 @@ export default function Search() {
     }
   };
 
+  if (loading)
+    return <p className="text-center mt-10 text-gray-600">Carregando...</p>;
+
+  if (error)
+    return (
+      <p className="text-center mt-10 text-red-600 font-medium">{error}</p>
+    );
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <div className="space-y-6">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Infrações Enviadas</h2>
-            <div className="space-y-4">
-              {mockInfraction.infractions.map((infraction, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-1 md:grid-cols-[3fr_2fr] p-4 bg-gray-50 rounded-lg items-center"
-                >
-                  <div className="flex flex-col justify-center">
-                    <p className="font-medium">Local: {infraction.location}</p>
-                    <p>Data/Hora: {infraction.datetime}</p>
-                    <p>Motivo: {infraction.reason}</p>
-                    <p>Tipo de Infração: {infraction.type}</p>
-                  </div>
-                  <div className="flex justify-end">
-                    <img
-                      src={infraction.image}
-                      alt={`Infração ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-lg cursor-pointer max-w-xs"
-                      onClick={() => handleImageClick(infraction.image)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
+        <h1 className="text-3xl font-bold text-gray-900">Infrações Enviadas</h1>
+
+        {/* Exibir resultado */}
+        {infractions && (
+          <div className="space-y-6">
+            {infractions?.length > 0 && (
+              <>
+                <Card className="p-6 space-y-6">
+                  {infractions.map((inf: any, index: number) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-1 md:grid-cols-[3fr_2fr] p-4 bg-gray-50 rounded-lg items-center"
+                    >
+                      <div className="flex flex-col justify-center">
+                        <p>
+                          <strong>Local:</strong>{" "}
+                          {`${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
+                        </p>
+                        <p className="font-medium">
+                          <strong>Data/Hora:</strong>{" "}
+                          {new Date(inf.data).toLocaleString("pt-BR")}
+                        </p>
+                        <p>
+                          <strong>Motivo:</strong> {inf.tipo_infracao.descricao}
+                        </p>
+                        <p>
+                          <strong>Tipo de Infração:</strong>{" "}
+                          {inf.tipo_infracao.gravidade}
+                        </p>
+                        <p>
+                          <strong>Pontos:</strong> {inf.tipo_infracao.pontos}
+                        </p>
+                      </div>
+
+                      {inf.imagem && (
+                        <div className="flex justify-end">
+                          <img
+                            src={`${API_BASE_URL}${inf.imagem}`}
+                            alt={`Infração ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg cursor-pointer max-w-xs"
+                            onClick={() =>
+                              handleImageClick(`${API_BASE_URL}${inf.imagem}`)
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </Card>
+                {/* 👇 Passando os dados reais para o mapa */}
+                <Mapa
+                  locations={infractions.map((inf: any) => ({
+                    id: inf.id || Math.random(),
+                    latitude: Number(inf.endereco.latitude),
+                    longitude: Number(inf.endereco.longitude),
+                    rua: inf.endereco.rua,
+                    cidade: inf.endereco.cidade,
+                    estado: inf.endereco.estado,
+                    data: new Date(inf.data).toLocaleString("pt-BR"),
+                    imagem: `${API_BASE_URL}${inf.imagem}`,
+                    user: null,
+                    pontos: inf.tipo_infracao.pontos,
+                    infracao: inf.tipo_infracao.descricao,
+                  }))}
+                  onMarkerClick={(data) => setSelectedInfraction(data)}
+                />
+              </>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Modal para exibir a imagem em tamanho maior */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-          onClick={handleModalClick} // Adiciona o evento de clique para fechar a modal
-        >
-          <div className="relative">
-            <img
-              src={selectedImage}
-              alt="Imagem Ampliada"
-              className="max-w-[80vw] max-h-[80vh] object-contain"
-            />
-            <button
-              onClick={closeModal}
-              className="absolute -top-4 -right-4 bg-white text-black rounded-full w-8 h-8 flex items-center justify-center shadow-md"
-            >
-              X
-            </button>
-          </div>
-        </div>
-      )}
+      <ModalInfraction
+        selectedImage={selectedImage}
+        selectedInfraction={selectedInfraction}
+        closeModal={closeModal}
+        handleModalClick={handleModalClick}
+      />
     </div>
   );
 }

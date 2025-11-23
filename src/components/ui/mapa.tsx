@@ -19,7 +19,7 @@ interface LocationItem {
   estado: string;
   data: string;
   imagem: string;
-  user: string;
+  user: string | null;
   pontos: string;
   infracao: string;
 }
@@ -75,11 +75,16 @@ export function Mapa({
             ${loc.rua}, ${loc.cidade} - ${loc.estado}
           </div>
 
+          ${
+            loc.user
+              ? `
           <div style="margin-bottom: 4px;">
             <span style="font-weight: 600; color:#374151;">Registrado por:</span>
             <span style="color:#111827;"> ${loc.user}</span>
           </div>
-
+          `
+              : ""
+          }
           <div style="margin-bottom: 6px;">
             <span style="font-weight: 600; color:#374151;">Data:</span>
             <span style="color:#111827;"> ${loc.data}</span>

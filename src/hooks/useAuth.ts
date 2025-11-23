@@ -8,7 +8,7 @@ import { useUser } from "@/src/contexts/UserContext";
 export function useAuth() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const { setImage, setName, setEmail } = useUser();
+  const { setId, setImage, setName, setEmail } = useUser();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,7 +30,7 @@ export function useAuth() {
 
         const data = await res.json();
 
-        // 🔥 Preenche o contexto AQUI
+        setId(data.id);
         setImage(data.image_url ? API_BASE_URL + data.image_url : null);
         setName(data.username || "");
         setEmail(data.email || "");
