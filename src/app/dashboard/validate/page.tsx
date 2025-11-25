@@ -6,7 +6,7 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { useState } from "react";
 import { API_BASE_URL } from "@/src/config/env";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { ReloadIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 
 // Dados simulados de resultado da validação
 
@@ -179,6 +179,58 @@ export default function Validate() {
             </div>
           </Card>
         )}
+        <div className="pt-4 border-t border-gray-200 mt-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-2">
+            <InfoCircledIcon className="w-6 h-6" />
+            Como funciona
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <Card className="p-4 overflow-hidden flex flex-col items-center text-center h-full hover:scale-105 transition-transform duration-300">
+              <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden">
+                <img 
+                  src="/foto1.png" 
+                  alt="Enquadramento do carro na calçada" 
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <h3 className="font-bold text-lg mb-2">1. Localize a Infração</h3>
+              <p className="text-gray-600 text-sm">
+                Identifique o veículo estacionado irregularmente (ex: rodas sobre a calçada) e posicione-se para capturar o contexto.
+              </p>
+            </Card>
+
+            <Card className="p-4 overflow-hidden flex flex-col items-center text-center h-full hover:scale-105 transition-transform duration-300">
+              <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden">
+                <img 
+                  src="/foto2.png" 
+                  alt="Foco na placa do veículo" 
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <h3 className="font-bold text-lg mb-2">2. Foque na Placa</h3>
+              <p className="text-gray-600 text-sm">
+                Aproxime a câmera garantindo que a placa esteja nítida e iluminada na foto para uma melhor leitura.
+              </p>
+            </Card>
+
+            <Card className="p-4 overflow-hidden flex flex-col items-center text-center h-full hover:scale-105 transition-transform duration-300">
+              <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden">
+                <img 
+                  src="/foto3.png" 
+                  alt="Envio da imagem no sistema" 
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <h3 className="font-bold text-lg mb-2">3. Envie para Validar</h3>
+              <p className="text-gray-600 text-sm">
+                Faça o upload da imagem neste painel. O sistema analisará automaticamente se há infração e identificará a placa, se possível.
+              </p>
+            </Card>
+
+          </div>
+        </div>
       </div>
     </div>
   );

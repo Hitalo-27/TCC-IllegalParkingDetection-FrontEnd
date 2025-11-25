@@ -4,121 +4,113 @@ import {
   Camera, 
   ScanFace, 
   Ruler, 
-  TextSelect, 
+  ScanText, 
   Database, 
   ArrowRight 
 } from "lucide-react";
 
 export function ArchitectureFlow() {
-  const steps = [
+  const architectureSteps = [
     {
-      id: "01",
+      step: "01",
       title: "Captura & Input",
+      subtitle: "Monitoramento",
+      description: "Monitoramento contínuo e aquisição de frames via câmeras.",
       icon: Camera,
-      tech: "Monitoramento",
-      description: "Recebimento de frames via upload ou câmeras urbanas para análise inicial.",
-      color: "bg-gray-100 text-gray-600",
-      borderColor: "border-gray-200"
+      color: "bg-slate-100 text-slate-700",
+      badgeColor: "bg-slate-200 text-slate-800"
     },
     {
-      id: "02",
+      step: "02",
       title: "Detecção IA",
+      subtitle: "YOLOv11",
+      description: "Processamento visual utilizando o modelo SOTA YOLOv11.",
       icon: ScanFace,
-      tech: "YOLOv11",
-      description: "Segmentação de instâncias: identifica veículos, calçadas, guias e sinalização.",
-      color: "bg-blue-100 text-blue-600",
-      borderColor: "border-blue-200"
+      color: "bg-blue-50 text-blue-600",
+      badgeColor: "bg-blue-100 text-blue-700"
     },
     {
-      id: "03",
+      step: "03",
       title: "Validação Lógica",
+      subtitle: "Algoritmo Espacial",
+      description: "Verificação de regras de estacionamento (calçada/faixa/placa).",
       icon: Ruler,
-      tech: "Algoritmo Espacial",
-      description: "Verifica infrações por Interseção (sobreposição) ou Relacional (distância da placa).",
-      color: "bg-amber-100 text-amber-600",
-      borderColor: "border-amber-200"
+      color: "bg-orange-50 text-orange-600",
+      badgeColor: "bg-orange-100 text-orange-700"
     },
     {
-      id: "04",
+      step: "04",
       title: "Extração ALPR",
-      icon: TextSelect,
-      tech: "OCR & Metadata",
-      description: "Leitura automática da placa, identificação de cor e registro de data/hora.",
-      color: "bg-purple-100 text-purple-600",
-      borderColor: "border-purple-200"
+      subtitle: "OCR & Metadata",
+      description: "Leitura automática de placas e extração de dados.",
+      icon: ScanText,
+      color: "bg-purple-50 text-purple-600",
+      badgeColor: "bg-purple-100 text-purple-700"
     },
     {
-      id: "05",
+      step: "05",
       title: "Ação & Registro",
+      subtitle: "API REST / MySQL",
+      description: "Persistência dos dados e disponibilização via API.",
       icon: Database,
-      tech: "API REST / MySQL",
-      description: "Persistência no banco de dados e notificação automática ao usuário.",
-      color: "bg-emerald-100 text-emerald-600",
-      borderColor: "border-emerald-200"
+      color: "bg-emerald-50 text-emerald-600",
+      badgeColor: "bg-emerald-100 text-emerald-700"
     },
   ];
 
   return (
-    <div className="w-full py-10 px-6 bg-white rounded-2xl shadow-sm border border-gray-100">
-      <div className="mb-12 text-center max-w-2xl mx-auto">
-        <h3 className="text-2xl font-bold text-gray-900">
+    <section className="bg-white p-6 md:p-8 rounded-xl border border-gray-200 shadow-sm">
+      <div className="text-center mb-10">
+        <h2 className="text-2xl font-bold text-gray-900">
           Arquitetura de Processamento
-        </h3>
-        <p className="text-gray-500 mt-3 text-sm leading-relaxed">
-          Fluxo automatizado baseado na arquitetura proposta no TCC, integrando 
-          Visão Computacional e Lógica de Validação conforme as regras do CTB.
+        </h2>
+        <p className="text-gray-500 mt-2 max-w-2xl mx-auto text-sm md:text-base">
+          Fluxo automatizado baseado na arquitetura proposta no TCC, integrando Visão Computacional e Lógica de Validação conforme as regras do CTB.
         </p>
       </div>
 
-      <div className="relative">
-        {/* Linha de Conexão (Desktop) */}
-        <div className="hidden lg:block absolute top-10 left-10 right-10 h-0.5 bg-gradient-to-r from-gray-200 via-blue-200 to-emerald-200 -z-10" />
-
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-4">
-          {steps.map((step, index) => (
-            <div key={index} className="relative flex flex-col items-center group">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        {architectureSteps.map((item, index) => (
+          <div 
+            key={index} 
+            className="group relative flex flex-col items-center text-center space-y-4"
+          >
+            {/* Círculo do Ícone com Efeito Hover */}
+            <div className={`
+              relative w-20 h-20 rounded-full flex items-center justify-center 
+              transition-all duration-300 group-hover:scale-110 group-hover:shadow-md
+              ${item.color}
+            `}>
+              <item.icon className="w-8 h-8" />
               
-              {/* Card Flutuante ao passar o mouse (Tooltip Gigante) */}
-              <div className="lg:absolute lg:-top-24 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 bg-gray-900 text-white p-3 rounded-lg text-xs w-48 text-center pointer-events-none mb-4 lg:mb-0 shadow-xl transform lg:translate-y-2 lg:group-hover:translate-y-0 z-20">
-                {step.description}
-                <div className="hidden lg:block absolute bottom-[-6px] left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-900 rotate-45"></div>
-              </div>
-
-              {/* Círculo Principal */}
-              <div className={`
-                relative flex items-center justify-center w-20 h-20 rounded-full 
-                ${step.color} border-4 border-white shadow-lg 
-                group-hover:scale-110 transition-transform duration-300 z-10
-                ${step.borderColor}
-              `}>
-                <step.icon strokeWidth={1.5} className="w-8 h-8" />
-                
-                {/* Badge de Tecnologia */}
-                <div className="absolute -bottom-3 px-2 py-0.5 bg-white border border-gray-100 rounded-full text-[10px] font-bold text-gray-700 shadow-sm whitespace-nowrap">
-                  {step.tech}
-                </div>
-              </div>
-
-              {/* Seta Mobile (aparece entre itens apenas no celular) */}
-              {index !== steps.length - 1 && (
-                <div className="lg:hidden mt-4 text-gray-300">
-                  <ArrowRight className="w-6 h-6 rotate-90" />
-                </div>
-              )}
-
-              {/* Textos */}
-              <div className="mt-6 text-center">
-                <span className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-                  Passo {step.id}
-                </span>
-                <h4 className="font-semibold text-gray-900 text-sm px-2">
-                  {step.title}
-                </h4>
-              </div>
+              {/* Badge Pequeno (ex: Monitoramento) */}
+              <span className="absolute -bottom-3 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-white border border-gray-100 shadow-sm rounded-full text-gray-600 whitespace-nowrap">
+                {item.subtitle}
+              </span>
             </div>
-          ))}
-        </div>
+
+            {/* Seta de Conexão (Escondida no Mobile e no último item) */}
+            {index < architectureSteps.length - 1 && (
+              <div className="hidden lg:block absolute top-8 -right-1/2 w-full text-gray-300 z-0 pointer-events-none">
+                 <ArrowRight className="w-6 h-6 mx-auto opacity-50" />
+              </div>
+            )}
+
+            {/* Conteúdo Textual */}
+            <div className="z-10 bg-white pt-2">
+              <p className={`text-xs font-bold mb-1 tracking-widest uppercase ${item.badgeColor.replace('bg-', 'text-').replace('100', '600')}`}>
+                PASSO {item.step}
+              </p>
+              <h3 className="font-semibold text-gray-900 mb-2">
+                {item.title}
+              </h3>
+              <p className="text-xs text-gray-500 leading-relaxed px-1">
+                {item.description}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
 }

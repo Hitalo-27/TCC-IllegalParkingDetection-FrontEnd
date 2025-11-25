@@ -82,6 +82,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </header>
       <main className="flex-1">{children}</main>
-    </div>
-  );
+    
+      <footer className="w-full border-t bg-background py-5 px-4">
+          <div className="container flex flex-col items-center justify-between gap-4 md:h-12 md:flex-row text-sm text-muted-foreground min-w-full">
+            <p className="text-center md:text-left text-gray-500">
+              &copy; {new Date().getFullYear()} IPD - Detecção de Infrações. Todos os direitos reservados.
+            </p>
+          </div>
+        </footer>
+      </div>
+    );
 }
