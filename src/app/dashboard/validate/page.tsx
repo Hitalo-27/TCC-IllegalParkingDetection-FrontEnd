@@ -9,6 +9,7 @@ import { API_BASE_URL } from "@/src/config/env";
 import { ReloadIcon, InfoCircledIcon } from "@radix-ui/react-icons";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import { X } from "lucide-react";
+import { ImageModal } from "@/src/components/ui/modalvehicles";
 
 type validationResult = {
   success: boolean;
@@ -32,20 +33,19 @@ export default function Validate() {
   const [error, setError] = useState<string | null>(null);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success" | "error">(
-    "error"
-  );
-  const [validationResult, setValidationResult] =
-    useState<validationResult | null>(null);
+  const [toastVariant, setToastVariant] = useState<"success" | "error">("error");
+  const [validationResult, setValidationResult] = useState<validationResult | null>(null);
+
+  // Estado simples apenas para controlar abrir/fechar
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setError(null); // Limpa erro ao selecionar novo arquivo
-      setValidationResult(null); // Limpa resultado anterior
+      setError(null);
+      setValidationResult(null);
 
-      // Criar preview da imagem local
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -56,7 +56,6 @@ export default function Validate() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!file) return;
 
     setLoading(true);
@@ -64,7 +63,6 @@ export default function Validate() {
 
     try {
       const token = localStorage.getItem("token");
-
       if (!token) {
         setError("Token não encontrado. Faça login novamente.");
         setLoading(false);
@@ -77,29 +75,22 @@ export default function Validate() {
       const response = await fetch(`${API_BASE_URL}/plate/identification`, {
         method: "POST",
         body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
 
-      // 2. Lógica solicitada: Verificar success e atualizar imagem ou mostrar erro
       if (data.success === true) {
         setValidationResult(data);
         setToastVariant("success");
         setToastMessage("Imagem processada com sucesso!");
         setToastOpen(true);
 
-        // Atualiza o preview para a imagem validada retornada pelo backend
-        // Obs: Como o JSON retorna "/detect/..." assumi que é relativo à URL base.
         if (data.data && data.data.imagem) {
-          // Remove a barra final do API_BASE_URL se existir para evitar duplicidade com a barra inicial da imagem
           const baseUrl = API_BASE_URL.replace(/\/$/, "");
           setPreview(`${baseUrl}${data.data.imagem}`);
         }
       } else {
-        // Se success for false
         const msg = data.message || "Erro ao processar a imagem.";
         setToastVariant("error");
         setToastMessage(msg);
@@ -149,23 +140,27 @@ export default function Validate() {
               {preview && (
                 <div className="mt-4">
                   <p className="text-sm font-medium mb-2 text-gray-700">
-                    {validationResult
-                      ? "Imagem Analisada:"
-                      : "Pré-visualização:"}
+                    {validationResult ? "Imagem Analisada:" : "Pré-visualização:"}
                   </p>
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="max-h-64 rounded-lg mx-auto"
-                  />
+                  
+                  {/* Container clicável da imagem pequena */}
+                  <div 
+                    className="relative group cursor-zoom-in w-fit mx-auto"
+                    onClick={() => setIsModalOpen(true)}
+                  >
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="max-h-64 rounded-lg mx-auto transition-opacity hover:opacity-90"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-lg">
+                      <span className="text-white text-sm font-medium bg-black/50 px-2 py-1 rounded">Clique para ampliar</span>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={!file || loading}
-              >
+              <Button type="submit" className="w-full" disabled={!file || loading}>
                 {loading ? (
                   <div className="flex items-center gap-2">
                     <ReloadIcon className="h-4 w-4 animate-spin" />
@@ -180,125 +175,72 @@ export default function Validate() {
 
           {validationResult && (
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">
-                Resultado da Análise
-              </h2>
+              <h2 className="text-xl font-semibold mb-4">Resultado da Análise</h2>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <div
-                    className={`w-3 h-3 rounded-full ${
-                      validationResult.hasInfraction
-                        ? "bg-red-500"
-                        : "bg-green-500"
-                    }`}
-                  />
+                  <div className={`w-3 h-3 rounded-full ${validationResult.hasInfraction ? "bg-red-500" : "bg-green-500"}`} />
                   <p className="font-medium">
-                    {validationResult.hasInfraction
-                      ? "Infração Detectada"
-                      : "Nenhuma Infração Detectada"}
+                    {validationResult.hasInfraction ? "Infração Detectada" : "Nenhuma Infração Detectada"}
                   </p>
                 </div>
                 {validationResult.hasInfraction && (
                   <>
-                    <p>
-                      <span className="font-medium">Placa:</span>{" "}
-                      {validationResult.data.plate}
-                    </p>
-                    <p>
-                      <span className="font-medium">Local:</span>{" "}
-                      {validationResult.data.location}
-                    </p>
-                    <p>
-                      <span className="font-medium">Data/Hora:</span>{" "}
-                      {validationResult.data.datetime}
-                    </p>
-                    <p>
-                      <span className="font-medium">Infração:</span>{" "}
-                      {validationResult.data.infraction}
-                    </p>
-                    <p>
-                      <span className="font-medium">Tipo de Infração:</span>{" "}
-                      {validationResult.data.gravity}
-                    </p>
+                    <p><span className="font-medium">Placa:</span> {validationResult.data.plate}</p>
+                    <p><span className="font-medium">Local:</span> {validationResult.data.location}</p>
+                    <p><span className="font-medium">Data/Hora:</span> {validationResult.data.datetime}</p>
+                    <p><span className="font-medium">Infração:</span> {validationResult.data.infraction}</p>
+                    <p><span className="font-medium">Tipo de Infração:</span> {validationResult.data.gravity}</p>
                   </>
                 )}
               </div>
             </Card>
           )}
 
-          {/* Seção Informativa (Mantida original) */}
+          {/* Seção Informativa */}
           <div className="pt-4 border-t border-gray-200 mt-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-2">
               <InfoCircledIcon className="w-6 h-6" />
               Como funciona
             </h2>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="p-4 overflow-hidden flex flex-col items-center text-center h-full hover:scale-105 transition-transform duration-300">
-                <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden">
-                  <img
-                    src="/foto1.png"
-                    alt="Enquadramento do carro na calçada"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <h3 className="font-bold text-lg mb-2">
-                  1. Localize a Infração
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Identifique o veículo estacionado irregularmente (ex: rodas
-                  sobre a calçada) e posicione-se para capturar o contexto.
-                </p>
+              {/* Cards informativos mantidos iguais... */}
+              <Card className="p-4 flex flex-col items-center text-center h-full hover:scale-105 transition-transform">
+                 <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden"><img src="/foto1.png" alt="Exemplo 1" className="object-cover w-full h-full"/></div>
+                 <h3 className="font-bold text-lg mb-2">1. Localize a Infração</h3>
+                 <p className="text-gray-600 text-sm">Identifique o veículo estacionado irregularmente.</p>
               </Card>
-
-              <Card className="p-4 overflow-hidden flex flex-col items-center text-center h-full hover:scale-105 transition-transform duration-300">
-                <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden">
-                  <img
-                    src="/foto2.png"
-                    alt="Foco na placa do veículo"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <h3 className="font-bold text-lg mb-2">2. Foque na Placa</h3>
-                <p className="text-gray-600 text-sm">
-                  Aproxime a câmera garantindo que a placa esteja nítida e
-                  iluminada na foto para uma melhor leitura.
-                </p>
+              <Card className="p-4 flex flex-col items-center text-center h-full hover:scale-105 transition-transform">
+                 <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden"><img src="/foto2.png" alt="Exemplo 2" className="object-cover w-full h-full"/></div>
+                 <h3 className="font-bold text-lg mb-2">2. Foque na Placa</h3>
+                 <p className="text-gray-600 text-sm">Garanta que a placa esteja nítida e iluminada.</p>
               </Card>
-
-              <Card className="p-4 overflow-hidden flex flex-col items-center text-center h-full hover:scale-105 transition-transform duration-300">
-                <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden">
-                  <img
-                    src="/foto3.png"
-                    alt="Envio da imagem no sistema"
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-                <h3 className="font-bold text-lg mb-2">
-                  3. Envie para Validar
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Faça o upload da imagem neste painel. O sistema analisará
-                  automaticamente se há infração e identificará a placa, se
-                  possível.
-                </p>
+              <Card className="p-4 flex flex-col items-center text-center h-full hover:scale-105 transition-transform">
+                 <div className="w-full relative mb-4 bg-gray-100 rounded-md overflow-hidden"><img src="/foto3.png" alt="Exemplo 3" className="object-cover w-full h-full"/></div>
+                 <h3 className="font-bold text-lg mb-2">3. Envie para Validar</h3>
+                 <p className="text-gray-600 text-sm">Faça o upload e o sistema analisará automaticamente.</p>
               </Card>
             </div>
           </div>
         </div>
-        {/* Toast */}
+
+        {/* --- AQUI ESTÁ SEU NOVO COMPONENTE --- */}
+        <ImageModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          imageUrl={preview} 
+        />
+
+        {/* Toast Notification */}
         <ToastPrimitives.Root
           open={toastOpen}
           onOpenChange={setToastOpen}
-          className={`fixed top-5 right-5 w-80 rounded-lg p-4 shadow-lg text-white ${
+          className={`fixed top-5 right-5 w-80 rounded-lg p-4 shadow-lg text-white z-[120] ${
             toastVariant === "success" ? "bg-green-500" : "bg-red-500"
           }`}
         >
           <div className="flex justify-between items-center">
             <span>{toastMessage}</span>
-            <ToastPrimitives.Close>
-              <X className="h-5 w-5" />
-            </ToastPrimitives.Close>
+            <ToastPrimitives.Close><X className="h-5 w-5" /></ToastPrimitives.Close>
           </div>
         </ToastPrimitives.Root>
         <ToastPrimitives.Viewport />

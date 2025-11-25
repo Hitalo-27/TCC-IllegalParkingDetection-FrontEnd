@@ -105,6 +105,9 @@ export default function Vehicles() {
                     >
                       <div className="flex flex-col justify-center">
                         <p>
+                          <strong>Placa:</strong> {inf.veiculo.placa_numero}
+                        </p>
+                        <p>
                           <strong>Local:</strong>{" "}
                           {`${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
                         </p>
@@ -143,6 +146,7 @@ export default function Vehicles() {
                 <Mapa
                   locations={infractions.map((inf: any) => ({
                     id: inf.id || Math.random(),
+                    placa: inf.veiculo.placa_numero,
                     latitude: Number(inf.endereco.latitude),
                     longitude: Number(inf.endereco.longitude),
                     rua: inf.endereco.rua,

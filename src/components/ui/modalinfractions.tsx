@@ -3,6 +3,7 @@
 import React from "react";
 
 interface InfractionData {
+  placa: string | null;
   imagem: string;
   rua: string;
   cidade: string;
@@ -64,6 +65,12 @@ export default function ModalInfraction({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full text-gray-800">
               {/* ESQUERDA */}
               <div className="space-y-1">
+                {selectedInfraction.placa && (
+                  <p>
+                    <span className="font-semibold text-gray-700">Placa:</span>{" "}
+                    <span>{selectedInfraction.placa}</span>
+                  </p>
+                )}
                 <p>
                   <span className="font-semibold text-gray-700">Local:</span>{" "}
                   <span>{selectedInfraction.rua}</span>

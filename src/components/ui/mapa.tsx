@@ -12,6 +12,7 @@ declare global {
 
 interface LocationItem {
   id: number;
+  placa: string | null;
   latitude: number;
   longitude: number;
   rua: string;
@@ -74,6 +75,17 @@ export function Mapa({
           <div style="font-size: 15px; font-weight: 600; color: #014643; margin-bottom: 6px;">
             ${loc.rua}, ${loc.cidade} - ${loc.estado}
           </div>
+
+          ${
+            loc.placa
+              ? `
+          <div style="margin-bottom: 4px;">
+            <span style="font-weight: 600; color:#374151;">Placa:</span>
+            <span style="color:#111827;"> ${loc.placa}</span>
+          </div>
+          `
+              : ""
+          }
 
           ${
             loc.user
