@@ -11,21 +11,21 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 // Dados simulados de resultado da validação
 
 type mockValidationResult = {
-  hasInfraction: boolean,
-  plate: string,
-  location: string,
-  datetime: string,
-  infraction: string,
-  type: string,
-}
+  hasInfraction: boolean;
+  plate: string;
+  location: string;
+  datetime: string;
+  infraction: string;
+  type: string;
+};
 
 export default function Validate() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [validationResult, setValidationResult] = useState<mockValidationResult | null>(
-    null
-  );
+  const [error, setError] = useState<string | null>(null);
+  const [validationResult, setValidationResult] =
+    useState<mockValidationResult | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -48,15 +48,25 @@ export default function Validate() {
     setLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setError("Token não encontrado. Faça login novamente.");
+        setLoading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append("file", file);
 
       const response = await fetch(`${API_BASE_URL}/plate/identification`, {
         method: "POST",
         body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
       });
 
-      
       const data = await response.json();
 
       //Exibir resposta correta caso não tenha nenhuma infração
@@ -66,10 +76,9 @@ export default function Validate() {
       }
 
       setValidationResult(data);
-      console.log(data)
+      console.log(data);
     } catch (error) {
       console.error(error);
-
     } finally {
       setLoading(false);
     }
@@ -108,7 +117,11 @@ export default function Validate() {
               </div>
             )}
 
-            <Button type="submit" className="w-full" disabled={!file || loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!file || loading}
+            >
               {loading ? (
                 <div className="flex items-center gap-2">
                   <ReloadIcon className="h-4 w-4 animate-spin" />
@@ -123,26 +136,44 @@ export default function Validate() {
 
         {validationResult && (
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">
-              Resultado da Análise
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">Resultado da Análise</h2>
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${validationResult.hasInfraction ? 'bg-red-500' : 'bg-green-500'
-                  }`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    validationResult.hasInfraction
+                      ? "bg-red-500"
+                      : "bg-green-500"
+                  }`}
+                />
                 <p className="font-medium">
                   {validationResult.hasInfraction
-                    ? 'Infração Detectada'
-                    : 'Nenhuma Infração Detectada'}
+                    ? "Infração Detectada"
+                    : "Nenhuma Infração Detectada"}
                 </p>
               </div>
               {validationResult.hasInfraction && (
                 <>
-                  <p><span className="font-medium">Placa:</span> {validationResult.plate}</p>
-                  <p><span className="font-medium">Local:</span> {validationResult.location}</p>
-                  <p><span className="font-medium">Data/Hora:</span> {validationResult.datetime}</p>
-                  <p><span className="font-medium">Infração:</span> {validationResult.infraction}</p>
-                  <p><span className="font-medium">Tipo de Infração:</span> {validationResult.type}</p>
+                  <p>
+                    <span className="font-medium">Placa:</span>{" "}
+                    {validationResult.plate}
+                  </p>
+                  <p>
+                    <span className="font-medium">Local:</span>{" "}
+                    {validationResult.location}
+                  </p>
+                  <p>
+                    <span className="font-medium">Data/Hora:</span>{" "}
+                    {validationResult.datetime}
+                  </p>
+                  <p>
+                    <span className="font-medium">Infração:</span>{" "}
+                    {validationResult.infraction}
+                  </p>
+                  <p>
+                    <span className="font-medium">Tipo de Infração:</span>{" "}
+                    {validationResult.type}
+                  </p>
                 </>
               )}
             </div>
