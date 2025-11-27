@@ -7,14 +7,22 @@ import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
-import { Camera, X } from "lucide-react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
+import { Camera, X, Eye, EyeOff } from "lucide-react";
 import { API_BASE_URL } from "@/src/config/env";
 import { useUser } from "@/src/contexts/UserContext";
 
 export default function Profile() {
   const router = useRouter();
   const { image, setImage, name, setName, email, setEmail } = useUser();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordNew, setShowPasswordNew] = useState(false);
+  const [showPasswordNewConfirm, setShowPasswordNewConfirm] = useState(false);
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(image);
@@ -28,12 +36,14 @@ export default function Profile() {
 
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success" | "error">("error");
+  const [toastVariant, setToastVariant] = useState<"success" | "error">(
+    "error"
+  );
 
   // Sincroniza formulário e preview com o contexto
   useEffect(() => {
     setPreviewImage(image);
-    setForm(prev => ({ ...prev, name, email }));
+    setForm((prev) => ({ ...prev, name, email }));
   }, [image, name, email]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,30 +156,103 @@ export default function Profile() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome</Label>
-                <Input id="name" name="name" type="text" value={form.name} onChange={handleFormChange} />
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={form.name}
+                  onChange={handleFormChange}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" value={form.email} onChange={handleFormChange} />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={handleFormChange}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="currentPassword">Senha Atual</Label>
-                <Input id="currentPassword" name="currentPassword" type="password" value={form.currentPassword} onChange={handleFormChange} />
+                <div className="relative">
+                  <Input
+                    id="currentPassword"
+                    name="currentPassword"
+                    type={showPassword ? "text" : "password"}
+                    value={form.currentPassword}
+                    onChange={handleFormChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} color="hsl(var(--primary))" />
+                    ) : (
+                      <Eye size={18} color="hsl(var(--primary))" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="newPassword">Nova Senha</Label>
-                <Input id="newPassword" name="newPassword" type="password" value={form.newPassword} onChange={handleFormChange} />
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    name="newPassword"
+                    type={showPasswordNew ? "text" : "password"}
+                    value={form.newPassword}
+                    onChange={handleFormChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordNew(!showPasswordNew)}
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                  >
+                    {showPasswordNew ? (
+                      <EyeOff size={18} color="hsl(var(--primary))" />
+                    ) : (
+                      <Eye size={18} color="hsl(var(--primary))" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
-                <Input id="confirmPassword" name="confirmPassword" type="password" value={form.confirmPassword} onChange={handleFormChange} />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showPasswordNewConfirm ? "text" : "password"}
+                    value={form.confirmPassword}
+                    onChange={handleFormChange}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPasswordNewConfirm(!showPasswordNewConfirm)
+                    }
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                  >
+                    {showPasswordNewConfirm ? (
+                      <EyeOff size={18} color="hsl(var(--primary))" />
+                    ) : (
+                      <Eye size={18} color="hsl(var(--primary))" />
+                    )}
+                  </button>
+                </div>
               </div>
 
-              <Button type="submit" className="w-full">Salvar Alterações</Button>
+              <Button type="submit" className="w-full">
+                Salvar Alterações
+              </Button>
             </form>
           </Card>
         </div>
