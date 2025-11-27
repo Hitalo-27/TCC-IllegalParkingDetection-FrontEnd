@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/src/contexts/UserContext";
 import { Mapa } from "@/src/components/ui/mapa";
 import ModalInfraction from "@/src/components/ui/modalinfractions";
+import { useRouter } from "next/navigation";
 
 export default function Vehicles() {
+  const router = useRouter()
   const { id } = useUser();
 
   const [infractions, setInfractions] = useState([]);
@@ -25,6 +27,7 @@ export default function Vehicles() {
 
         if (!token) {
           setError("Token não encontrado. Faça login novamente.");
+          router.push('/login?error=unauthorized')
           setLoading(false);
           return;
         }
@@ -52,7 +55,6 @@ export default function Vehicles() {
         }
 
         const data = await response.json();
-
         setInfractions(data.infracoes || []);
       } catch (err: any) {
         setError(err.message || "Erro inesperado.");
@@ -109,7 +111,15 @@ export default function Vehicles() {
                         </p>
                         <p>
                           <strong>Local:</strong>{" "}
-                          {`${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
+                          Para evitar erro quando o endereço for null
+                          {!inf.endereco || !inf.endereco.rua ? (
+                            <>Não localizado</>
+                          ) : (
+                            <>
+                              {`${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
+                            </>
+                          )}
+                          
                         </p>
                         <p className="font-medium">
                           <strong>Data/Hora:</strong>{" "}
@@ -147,11 +157,11 @@ export default function Vehicles() {
                   locations={infractions.map((inf: any) => ({
                     id: inf.id || Math.random(),
                     placa: inf.veiculo.placa_numero,
-                    latitude: Number(inf.endereco.latitude),
-                    longitude: Number(inf.endereco.longitude),
-                    rua: inf.endereco.rua,
-                    cidade: inf.endereco.cidade,
-                    estado: inf.endereco.estado,
+                    latitude: Number(inf.endereco?.latitude),
+                    longitude: Number(inf.endereco?.longitude),
+                    rua: inf.endereco?.rua,
+                    cidade: inf.endereco?.cidade,
+                    estado: inf.endereco?.estado,
                     data: new Date(inf.data).toLocaleString("pt-BR"),
                     imagem: `${API_BASE_URL}${inf.imagem}`,
                     user: null,

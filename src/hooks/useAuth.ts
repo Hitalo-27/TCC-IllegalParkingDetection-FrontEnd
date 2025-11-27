@@ -13,7 +13,7 @@ export function useAuth() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.replace("/login");
+      router.replace("/login?error=unauthorized");
       return;
     }
 

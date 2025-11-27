@@ -6,13 +6,14 @@ import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { X } from "lucide-react";
 import { API_BASE_URL } from "@/src/config/env";
 
 export default function Login() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [toastOpen, setToastOpen] = useState(false);
@@ -20,6 +21,17 @@ export default function Login() {
   const [toastVariant, setToastVariant] = useState<"success" | "error">(
     "error"
   );
+
+  React.useEffect(() => {
+      const error = searchParams.get('error');
+
+      if (error === 'unauthorized') {
+        setToastMessage("Token não encontrado. Faça login novamente.");
+        setToastOpen(true);
+
+        router.replace('/login');
+      }
+    }, [searchParams, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

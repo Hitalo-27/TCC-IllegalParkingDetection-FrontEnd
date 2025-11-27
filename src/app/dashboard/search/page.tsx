@@ -9,8 +9,10 @@ import { useState } from "react";
 import { API_BASE_URL } from "@/src/config/env";
 import ModalInfraction from "@/src/components/ui/modalinfractions";
 import { ImageModal } from "@/src/components/ui/modalvehicles";
+import { useRouter } from "next/navigation";
 
 export default function Search() {
+  const router = useRouter()
   const [plate, setPlate] = useState("");
   const [searchResult, setSearchResult] = useState<any | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -37,6 +39,7 @@ export default function Search() {
 
       if (!token) {
         setError("Token não encontrado. Faça login novamente.");
+        router.push('/login?error=unauthorized')
         setLoading(false);
         return;
       }
@@ -54,12 +57,19 @@ export default function Search() {
         }
       );
 
+      if (response.status === 401) {
+        setLoading(false);
+        router.push('/login?error=unauthorized')
+        return;
+      }
+
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
         throw new Error(err.detail || "Erro ao consultar infrações.");
       }
 
       const data = await response.json();
+      console.log("AAAAA --> ", data)
       setSearchResult(data);
     } catch (err: any) {
       setError(err.message || "Erro inesperado.");
@@ -190,11 +200,11 @@ export default function Search() {
                 <Mapa
                   locations={searchResult.infracoes.map((inf: any) => ({
                     id: inf.id || Math.random(),
-                    latitude: Number(inf.endereco.latitude),
-                    longitude: Number(inf.endereco.longitude),
-                    rua: inf.endereco.rua,
-                    cidade: inf.endereco.cidade,
-                    estado: inf.endereco.estado,
+                    latitude: Number(inf.endereco?.latitude),
+                    longitude: Number(inf.endereco?.longitude),
+                    rua: inf.endereco?.rua,
+                    cidade: inf.endereco?.cidade,
+                    estado: inf.endereco?.estado,
                     data: new Date(inf.data).toLocaleString("pt-BR"),
                     imagem: `${API_BASE_URL}${inf.imagem}`,
                     user: inf.user?.username || "Desconhecido",

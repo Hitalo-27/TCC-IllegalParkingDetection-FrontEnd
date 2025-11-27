@@ -12,8 +12,10 @@ import { X } from "lucide-react";
 import { ImageModal } from "@/src/components/ui/modalvehicles";
 import { Mapa } from "@/src/components/ui/mapa";
 import ModalInfraction from "@/src/components/ui/modalinfractions";
+import { useRouter } from "next/navigation";
 
 export default function Validate() {
+  const router = useRouter()
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,8 +59,8 @@ export default function Validate() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("Token não encontrado. Faça login novamente.");
         setLoading(false);
+        router.push('/login?error=unauthorized')
         return;
       }
 
@@ -70,6 +72,13 @@ export default function Validate() {
         body: formData,
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      // Se der 401 é certeza que o token expirou
+      if (response.status === 401) {
+        setLoading(false);
+        router.push('/login?error=unauthorized')
+        return;
+      }
 
       const data = await response.json();
 
@@ -90,8 +99,8 @@ export default function Validate() {
         setToastOpen(true);
         setValidationResult(null);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error(error.message);
       setToastVariant("error");
       setToastMessage("Erro de conexão com o servidor.");
       setToastOpen(true);
