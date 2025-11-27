@@ -149,7 +149,7 @@ export default function Search() {
                       <div className="flex flex-col justify-center space-y-1">
                         <p>
                           <strong>Local:</strong>{" "}
-                          {`${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
+                          {inf.endereco ? `${inf.endereco?.rua}, ${inf.endereco?.cidade}, ${inf.endereco?.estado} - ${inf.endereco?.pais}` : "Não disponível"}
                         </p>
                         <p className="font-medium">
                           <strong>Data/Hora:</strong>{" "}
