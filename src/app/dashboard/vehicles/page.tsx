@@ -109,11 +109,15 @@ export default function Vehicles() {
                         </p>
                         <p>
                           <strong>Local:</strong>{" "}
-                          {`${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
+                          {inf.endereco
+                            ? `${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`
+                            : "Não disponível"}
                         </p>
                         <p className="font-medium">
                           <strong>Data/Hora:</strong>{" "}
-                          {new Date(inf.data).toLocaleString("pt-BR")}
+                          {inf.data
+                            ? new Date(inf.data).toLocaleString("pt-BR")
+                            : "Não disponível"}
                         </p>
                         <p>
                           <strong>Motivo:</strong> {inf.tipo_infracao.descricao}
