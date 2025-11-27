@@ -139,7 +139,7 @@ export default function Search() {
                       <div className="flex flex-col justify-center space-y-1">
                         <p>
                           <strong>Local:</strong>{" "}
-                          {`${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`}
+                          {inf.endereco ? `${inf.endereco?.rua}, ${inf.endereco?.cidade}, ${inf.endereco?.estado} - ${inf.endereco?.pais}` : "Não disponível"}
                         </p>
                         <p className="font-medium">
                           <strong>Data/Hora:</strong>{" "}
@@ -190,11 +190,11 @@ export default function Search() {
                 <Mapa
                   locations={searchResult.infracoes.map((inf: any) => ({
                     id: inf.id || Math.random(),
-                    latitude: Number(inf.endereco.latitude),
-                    longitude: Number(inf.endereco.longitude),
-                    rua: inf.endereco.rua,
-                    cidade: inf.endereco.cidade,
-                    estado: inf.endereco.estado,
+                    latitude: Number(inf.endereco?.latitude),
+                    longitude: Number(inf.endereco?.longitude),
+                    rua: inf.endereco?.rua,
+                    cidade: inf.endereco?.cidade,
+                    estado: inf.endereco?.estado,
                     data: new Date(inf.data).toLocaleString("pt-BR"),
                     imagem: `${API_BASE_URL}${inf.imagem}`,
                     user: inf.user?.username || "Desconhecido",

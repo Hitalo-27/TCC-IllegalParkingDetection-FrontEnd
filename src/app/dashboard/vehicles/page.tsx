@@ -110,7 +110,7 @@ export default function Vehicles() {
                         <p>
                           <strong>Local:</strong>{" "}
                           {inf.endereco
-                            ? `${inf.endereco.rua}, ${inf.endereco.cidade}, ${inf.endereco.estado} - ${inf.endereco.pais}`
+                            ? `${inf.endereco?.rua}, ${inf.endereco?.cidade}, ${inf.endereco?.estado} - ${inf.endereco?.pais}`
                             : "Não disponível"}
                         </p>
                         <p className="font-medium">

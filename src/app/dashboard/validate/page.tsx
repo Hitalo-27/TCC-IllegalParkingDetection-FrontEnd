@@ -214,7 +214,7 @@ export default function Validate() {
                       </p>
                       <p>
                         <span className="font-medium">Local:</span>{" "}
-                        {validationResult.data.endereco ? `${validationResult.data.endereco.rua}, ${validationResult.data.endereco.cidade} - ${validationResult.data.endereco.estado}` : "Não disponível"}
+                        {validationResult.data.endereco ? `${validationResult.data.endereco?.rua}, ${validationResult.data.endereco?.cidade} - ${validationResult.data.endereco?.estado}` : "Não disponível"}
                       </p>
                       <p>
                         <span className="font-medium">Data/Hora:</span>{" "}
