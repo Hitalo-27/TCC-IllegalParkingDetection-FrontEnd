@@ -214,11 +214,17 @@ export default function Validate() {
                       </p>
                       <p>
                         <span className="font-medium">Local:</span>{" "}
-                        {validationResult.data.endereco ? `${validationResult.data.endereco?.rua}, ${validationResult.data.endereco?.cidade} - ${validationResult.data.endereco?.estado}` : "Não disponível"}
+                        {validationResult.data.endereco
+                          ? `${validationResult.data.endereco?.rua}, ${validationResult.data.endereco?.cidade} - ${validationResult.data.endereco?.estado}`
+                          : "Não disponível"}
                       </p>
                       <p>
                         <span className="font-medium">Data/Hora:</span>{" "}
-                        {validationResult.data.data ? new Date(validationResult.data.data).toLocaleString("pt-BR") : "Não disponível"}
+                        {validationResult.data.data
+                          ? new Date(validationResult.data.data).toLocaleString(
+                              "pt-BR"
+                            )
+                          : "Não disponível"}
                       </p>
                       <p>
                         <span className="font-medium">Infração:</span>{" "}
@@ -233,30 +239,38 @@ export default function Validate() {
                 </div>
               </Card>
 
-              {/* Mapa */}
-              <Mapa
-                locations={[
-                  {
-                    id: Math.random(),
-                    placa: validationResult.data?.veiculo?.placa_numer,
-                    latitude: Number(validationResult.data.endereco?.latitude),
-                    longitude: Number(
-                      validationResult.data.endereco?.longitude
-                    ),
-                    rua: validationResult.data.endereco?.rua,
-                    cidade: validationResult.data.endereco?.cidade,
-                    estado: validationResult.data.endereco?.estado,
-                    data: new Date(validationResult.data.data).toLocaleString(
-                      "pt-BR"
-                    ),
-                    imagem: `${API_BASE_URL}${validationResult.data.imagem}`,
-                    user: validationResult.data.user?.username,
-                    pontos: String(validationResult.data.tipo_infracao?.pontos),
-                    infracao: validationResult.data.tipo_infracao?.descricao,
-                  },
-                ]}
-                onMarkerClick={(data) => setSelectedInfraction(data)}
-              />
+              {validationResult.hasInfraction && (
+                <>
+                  <Mapa
+                    locations={[
+                      {
+                        id: Math.random(),
+                        placa: validationResult.data.veiculo?.placa_numer,
+                        latitude: Number(
+                          validationResult.data.endereco?.latitude
+                        ),
+                        longitude: Number(
+                          validationResult.data.endereco?.longitude
+                        ),
+                        rua: validationResult.data.endereco?.rua,
+                        cidade: validationResult.data.endereco?.cidade,
+                        estado: validationResult.data.endereco?.estado,
+                        data: new Date(
+                          validationResult.data.data
+                        ).toLocaleString("pt-BR"),
+                        imagem: `${API_BASE_URL}${validationResult.data.imagem}`,
+                        user: validationResult.data.user?.username,
+                        pontos: String(
+                          validationResult.data.tipo_infracao?.pontos
+                        ),
+                        infracao:
+                          validationResult.data.tipo_infracao?.descricao,
+                      },
+                    ]}
+                    onMarkerClick={(data) => setSelectedInfraction(data)}
+                  />
+                </>
+              )}
             </>
           )}
 
