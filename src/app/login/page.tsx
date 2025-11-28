@@ -7,11 +7,12 @@ import { Card } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react"; // Adicionado Suspense aqui
 import { X, Eye, EyeOff } from "lucide-react";
 import { API_BASE_URL } from "@/src/config/env";
 
-export default function Login() {
+// 1. Renomeamos o componente principal original para LoginForm
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -19,22 +20,19 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastVariant, setToastVariant] = useState<"success" | "error">(
-    "error"
-  );
+  const [toastVariant, setToastVariant] = useState("error");
 
   React.useEffect(() => {
-      const error = searchParams.get('error');
+    const error = searchParams.get('error');
 
-      if (error === 'unauthorized') {
-        setToastMessage("Token não encontrado. Faça login novamente.");
-        setToastOpen(true);
+    if (error === 'unauthorized') {
+      setToastMessage("Token não encontrado. Faça login novamente.");
+      setToastOpen(true);
+      router.replace('/login');
+    }
+  }, [searchParams, router]);
 
-        router.replace('/login');
-      }
-    }, [searchParams, router]);
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
@@ -56,9 +54,8 @@ export default function Login() {
       setToastMessage("Login realizado com sucesso! 😎");
       setToastOpen(true);
 
-      // Redireciona após 1s para mostrar o toast
       setTimeout(() => router.push("/dashboard"), 1000);
-    } catch (err: any) {
+    } catch (err) {
       setToastVariant("error");
       setToastMessage(err.message);
       setToastOpen(true);
@@ -84,7 +81,6 @@ export default function Login() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
-
               <div className="relative">
                 <Input
                   id="password"
@@ -93,15 +89,14 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   minLength={6}
                   required
-                  className="pr-10" // espaço para o ícone
+                  className="pr-10"
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? <EyeOff size={18} color="hsl(var(--primary))" /> : <Eye size={18} color="hsl(var(--primary))" />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
@@ -121,7 +116,6 @@ export default function Login() {
           </form>
         </Card>
 
-        {/* Toast */}
         <ToastPrimitives.Root
           open={toastOpen}
           onOpenChange={setToastOpen}
@@ -139,5 +133,15 @@ export default function Login() {
         <ToastPrimitives.Viewport />
       </div>
     </ToastPrimitives.Provider>
+  );
+}
+
+// 2. Criamos o componente Default que envolve o form com Suspense
+export default function Login() {
+  return (
+    // O fallback é o que aparece enquanto o Next.js carrega os parâmetros da URL
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Carregando...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
