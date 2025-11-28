@@ -132,6 +132,7 @@ export default function Validate() {
 
   return (
     <ToastPrimitives.Provider swipeDirection="right">
+      <ToastPrimitives.Viewport />
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6">
         <div className="max-w-6xl mx-auto space-y-8">
           {/* Cabeçalho */}
@@ -459,7 +460,6 @@ export default function Validate() {
             <X className="h-5 w-5" />
           </ToastPrimitives.Close>
         </ToastPrimitives.Root>
-        <ToastPrimitives.Viewport />
 
         <ModalInfraction
           selectedImage={null}
