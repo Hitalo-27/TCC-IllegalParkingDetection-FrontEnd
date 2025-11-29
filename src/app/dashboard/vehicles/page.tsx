@@ -279,7 +279,7 @@ export default function Vehicles() {
             <div className="flex items-center gap-2 mb-2">
               <MapPin className="w-5 h-5 text-gray-700" />
               <h2 className="text-xl font-bold text-gray-800">
-                Localização das Infrações
+                Geolocalização das Infrações
               </h2>
             </div>
 

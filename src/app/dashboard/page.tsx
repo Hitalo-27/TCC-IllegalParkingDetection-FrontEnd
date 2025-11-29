@@ -110,7 +110,7 @@ export default function Dashboard() {
             <StatCard 
               icon={<Target className="w-5 h-5 text-blue-600" />}
               value="85%"
-              label="Precisão Média (mAP)"
+              label="Precisão Média (Geral)"
               bg="bg-blue-50"
               border="border-blue-100"
             />

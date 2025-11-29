@@ -14,8 +14,8 @@ export function ArchitectureFlow() {
     {
       step: "01",
       title: "Captura & Input",
-      subtitle: "Monitoramento",
-      description: "Monitoramento contínuo e aquisição de frames via câmeras.",
+      subtitle: "Upload",
+      description: "Aquisição e submissão de fotos próprias ou arquivos de imagem para análise unitária.",
       icon: Camera,
       color: "bg-slate-100 text-slate-700",
       badgeColor: "bg-slate-200 text-slate-800"
@@ -42,7 +42,7 @@ export function ArchitectureFlow() {
       step: "04",
       title: "Extração ALPR",
       subtitle: "OCR & Metadata",
-      description: "Leitura automática de placas e extração de dados.",
+      description: "Leitura automática de placas e extração de dados (data, hora e local).",
       icon: ScanText,
       color: "bg-purple-50 text-purple-600",
       badgeColor: "bg-purple-100 text-purple-700"
