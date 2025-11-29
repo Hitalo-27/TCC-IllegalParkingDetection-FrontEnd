@@ -80,3 +80,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Remove o fundo azul/amarelo do Autocomplete do Chrome */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  /* Pinta o fundo de branco (ou a cor do seu card) por cima do azul */
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  
+  /* Mantém a cor do texto correta */
+  -webkit-text-fill-color: inherit !important;
+  
+  /* Atrasa a transição da cor de fundo para "enganar" o navegador */
+  transition: background-color 5000s ease-in-out 0s;
+}

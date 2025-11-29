@@ -20,6 +20,8 @@ import {
   AlertTriangle,
   FileText,
   Search,
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react";
 import { ImageModal } from "@/src/components/ui/modalvehicles";
 import { Mapa } from "@/src/components/ui/mapa";
@@ -132,8 +134,8 @@ export default function Validate() {
 
   return (
     <ToastPrimitives.Provider swipeDirection="right">
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <div className="min-h-screen bg-gray-50/50 p-4 md:p-8">
+        <div className="max-w-7xl mx-auto space-y-8">
           {/* Cabeçalho */}
           <div className="text-center md:text-left">
             <h1 className="text-3xl font-bold text-gray-900">
@@ -449,16 +451,38 @@ export default function Validate() {
           imageUrl={preview}
         />
 
+        {/* Modern Toast */}
         <ToastPrimitives.Root
           open={toastOpen}
           onOpenChange={setToastOpen}
-          className={`fixed top-5 right-5 w-auto max-w-sm rounded-xl p-4 shadow-xl text-white z-[120] flex items-center gap-4 animate-in slide-in-from-right-full ${
-            toastVariant === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
+          className={`
+            fixed top-5 right-5 z-50 
+            flex items-center gap-3 
+            w-auto max-w-sm rounded-xl p-4 shadow-2xl 
+            border animate-in slide-in-from-right-full fade-in duration-300
+            ${toastVariant === "success" 
+              ? "bg-white border-green-200 text-green-800" 
+              : "bg-white border-red-200 text-red-800"
+            }
+          `}
         >
-          <div className="flex-1 text-sm font-medium">{toastMessage}</div>
-          <ToastPrimitives.Close className="hover:opacity-75">
-            <X className="h-5 w-5" />
+          <div className={`p-2 rounded-full ${toastVariant === "success" ? "bg-green-100" : "bg-red-100"}`}>
+            {toastVariant === "success" ? (
+               <CheckCircle2 className="h-5 w-5" />
+            ) : (
+               <AlertCircle className="h-5 w-5" />
+            )}
+          </div>
+          
+          <div className="flex-1">
+             <h3 className="font-semibold text-sm">
+                {toastVariant === "success" ? "Sucesso" : "Erro"}
+             </h3>
+             <p className="text-sm opacity-90">{toastMessage}</p>
+          </div>
+
+          <ToastPrimitives.Close className="text-gray-400 hover:text-gray-600">
+            <X className="h-4 w-4" />
           </ToastPrimitives.Close>
         </ToastPrimitives.Root>
 

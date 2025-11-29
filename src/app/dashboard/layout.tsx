@@ -30,6 +30,11 @@ export default function DashboardLayout({
             href="/dashboard"
             className="flex items-center gap-2 font-semibold"
           >
+            <img 
+              src="/car.png" 
+              alt="Logo IPD" 
+              className="w-8 h-8 object-contain" 
+            />
             <span className="text-xl text-[hsl(var(--primary))]">IPD</span>
           </Link>
 
