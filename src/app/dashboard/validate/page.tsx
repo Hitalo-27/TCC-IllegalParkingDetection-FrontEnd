@@ -21,7 +21,8 @@ import {
   FileText,
   Search,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ScanSearch,
 } from "lucide-react";
 import { ImageModal } from "@/src/components/ui/modalvehicles";
 import { Mapa } from "@/src/components/ui/mapa";
@@ -145,16 +146,49 @@ export default function Validate() {
               Faça o upload da imagem para análise automática.
             </p>
           </div>
-          
+
           <ToastPrimitives.Viewport />
 
           <Card className="p-6 md:p-8 shadow-md border-gray-200 bg-white">
             <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="bg-primary/5 border border-primary/10 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <div className="bg-primary/10 p-2 rounded-full shrink-0">
+                    <ScanSearch className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-primary mb-2">
+                      3 Tipos Detectáveis:
+                    </h3>
+                    <ul className="text-sm text-primary/80 space-y-1.5">
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        <div>
+                          Carro estacionado sobre a <b>calçada</b>
+                        </div>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        <div>
+                          Carro estacionado sobre a <b>faixa de pedestre</b>
+                        </div>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                        <div>
+                          Carro estacionado sob a <b>placa de proibido</b>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
               {/* Área de Input */}
               <div className="space-y-2">
                 <Label
                   htmlFor="file"
-                  className="text-base font-semibold text-gray-700"
+                  className="text-base font-semibold text-primary"
                 >
                   Selecionar Imagem
                 </Label>
@@ -164,7 +198,7 @@ export default function Validate() {
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="cursor-pointer file:bg-blue-50 file:text-blue-700 file:border-0 file:rounded-md hover:file:bg-blue-100 transition-colors"
+                    className="cursor-pointer file:bg-primary/10 file:text-primary file:font-medium file:border-0 file:rounded-md hover:file:bg-primary/20 transition-colors"
                   />
                   <Button
                     type="submit"
@@ -181,12 +215,13 @@ export default function Validate() {
                     )}
                   </Button>
                 </div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   Formatos aceitos: JPG, PNG
                 </p>
               </div>
+
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center gap-2">
+                <div className="p-4 bg-destructive/10 border border-destructive/20 text-destructive rounded-lg text-sm flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" />
                   {error}
                 </div>
@@ -283,7 +318,10 @@ export default function Validate() {
                                     </span>
                                     <div className="text-xl font-mono font-bold text-gray-800">
                                       {validationResult.data.veiculo
-                                        ?.placa_numero || "---"} - {validationResult.data.veiculo?.cor || "---"}
+                                        ?.placa_numero || "---"}{" "}
+                                      -{" "}
+                                      {validationResult.data.veiculo?.cor ||
+                                        "---"}
                                     </div>
                                   </div>
 
@@ -460,25 +498,30 @@ export default function Validate() {
             flex items-center gap-3 
             w-auto max-w-sm rounded-xl p-4 shadow-2xl 
             border animate-in slide-in-from-right-full fade-in duration-300
-            ${toastVariant === "success" 
-              ? "bg-white border-green-200 text-green-800" 
-              : "bg-white border-red-200 text-red-800"
+            ${
+              toastVariant === "success"
+                ? "bg-white border-green-200 text-green-800"
+                : "bg-white border-red-200 text-red-800"
             }
           `}
         >
-          <div className={`p-2 rounded-full ${toastVariant === "success" ? "bg-green-100" : "bg-red-100"}`}>
+          <div
+            className={`p-2 rounded-full ${
+              toastVariant === "success" ? "bg-green-100" : "bg-red-100"
+            }`}
+          >
             {toastVariant === "success" ? (
-               <CheckCircle2 className="h-5 w-5" />
+              <CheckCircle2 className="h-5 w-5" />
             ) : (
-               <AlertCircle className="h-5 w-5" />
+              <AlertCircle className="h-5 w-5" />
             )}
           </div>
-          
+
           <div className="flex-1">
-             <h3 className="font-semibold text-sm">
-                {toastVariant === "success" ? "Sucesso" : "Erro"}
-             </h3>
-             <p className="text-sm opacity-90">{toastMessage}</p>
+            <h3 className="font-semibold text-sm">
+              {toastVariant === "success" ? "Sucesso" : "Erro"}
+            </h3>
+            <p className="text-sm opacity-90">{toastMessage}</p>
           </div>
 
           <ToastPrimitives.Close className="text-gray-400 hover:text-gray-600">
