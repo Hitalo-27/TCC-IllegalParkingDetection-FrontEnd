@@ -127,7 +127,7 @@ export default function Search() {
         <div className="flex flex-col items-center justify-center space-y-6 pt-4 md:pt-8 w-full">
           <div className="text-center space-y-2">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-              Consulta de Veículos
+              Consulta de Infrações
             </h1>
             <p className="text-gray-500">
               Pesquise o histórico de infrações pela placa do carro.
