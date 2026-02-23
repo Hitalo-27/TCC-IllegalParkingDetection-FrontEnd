@@ -46,7 +46,7 @@ yarn dev
 ```
 A aplicação estará disponível em: 👉 http://localhost:3000
 
-## 🖥️ Frontend do Projeto
+## 🖥️ Backend do Projeto
 
 O backend do projeto Illegal Parking Violation está disponível no repositório:
 
