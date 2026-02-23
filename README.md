@@ -1,8 +1,8 @@
 # 💻 Frontend Web - TCC (Next.js + React + Tailwind CSS)
 
-## 🚗 IPD - Detect Parking Violation
+## 🚗 IPD - Illegal Parking Violation
 
-Este repositório contém o frontend (interface do usuário) do Detect Parking Violation, desenvolvido como parte do TCC da UNIP. A aplicação foi construída utilizando Next.js, oferecendo uma interface moderna e responsiva para interagir com a API de visão computacional.
+Este repositório contém o frontend (interface do usuário) do Illegal Parking Violation, desenvolvido como parte do TCC da UNIP. A aplicação foi construída utilizando Next.js, oferecendo uma interface moderna e responsiva para interagir com a API de visão computacional.
 
 O objetivo deste frontend é permitir que usuários enviem imagens de veículos, visualizem as detecções processadas pelo modelo YOLOv11 e recebam relatórios detalhados sobre possíveis infrações de estacionamento.
 
@@ -48,9 +48,9 @@ A aplicação estará disponível em: 👉 http://localhost:3000
 
 ## 🖥️ Frontend do Projeto
 
-O backend do projeto Detect Parking Violation está disponível no repositório:
+O backend do projeto Illegal Parking Violation está disponível no repositório:
 
-👉 ```https://github.com/Hitalo-27/TCC-DetectParkingViolation-BackEnd```
+👉 ```https://github.com/Hitalo-27/TCC-IllegalParkingViolation-BackEnd```
 
 ## 🎓 TCC - UNIP
 Projeto desenvolvido para fins acadêmicos.
